@@ -1,10 +1,15 @@
 mod config;
 
-use tauri::webview::PageLoadEvent;
+use tauri::{AppHandle, webview::PageLoadEvent};
 
 #[tauri::command]
 fn get_target_address() -> String {
     config::TARGET_ADDRESS.to_string()
+}
+
+#[tauri::command]
+fn close_app(app: AppHandle) {
+    app.exit(0);
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -20,7 +25,7 @@ pub fn run() {
                 println!("{} finished loading", payload.url());
             }
         })
-        .invoke_handler(tauri::generate_handler![get_target_address])
+        .invoke_handler(tauri::generate_handler![get_target_address, close_app])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

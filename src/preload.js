@@ -2,6 +2,11 @@ window.IS_ELECTRON = true;
 window.IPC = {
     send: (...args) => {
         console.log("[IPC.send]", ...args);
+        switch (args[0]) {
+            case "close":
+                window.__TAURI__.core.invoke("close_app");
+                break;
+        }
     },
     on: (...args) => {
         console.log("[IPC.on]", ...args);
