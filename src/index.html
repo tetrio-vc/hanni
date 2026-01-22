@@ -1,16 +1,47 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="stylesheet" href="styles.css" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TETR.IO Loader</title>
-    <script type="module" src="/main.js" defer></script>
-  </head>
 
-  <body>
-    <main class="container">
-      <h1>shit does not work i promise</h1>
-    </main>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TETR.IO Loader</title>
+  <style>
+    :root {
+      font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 400;
+
+      color: #f6f6f6;
+      background-color: #0f0f0f;
+
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    .container {
+      margin: 0;
+      padding-top: 10vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+    }
+  </style>
+  <script type="module">
+    const { invoke } = window.__TAURI__.core;
+    const TARGET_ADDRESS = await invoke("get_target_address");
+    window.location = TARGET_ADDRESS;
+  </script>
+</head>
+
+<body>
+  <main class="container">
+    <h1>shit does not work i promise</h1>
+  </main>
+</body>
+
 </html>

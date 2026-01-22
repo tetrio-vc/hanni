@@ -1,6 +1,7 @@
 mod config;
 
 use tauri::{AppHandle, webview::PageLoadEvent};
+use tauri_plugin_shell::ShellExt;
 
 #[tauri::command]
 fn get_target_address() -> String {
@@ -12,10 +13,23 @@ fn close_app(app: AppHandle) {
     app.exit(0);
 }
 
+#[tauri::command]
+async fn call_socks5_proxy(app: AppHandle) {
+    let sidecar_command = app
+        .shell()
+        .sidecar("socks5-proxy")
+        .unwrap()
+        .args(["--listen-addr", &format!("127.0.0.1:{}", config::PROXY_PORT), "no-auth"]);
+
+    let (mut _rx, mut _child) = sidecar_command.spawn().unwrap();
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_log::Builder::new().build())
         .on_page_load(|window, payload| match payload.event() {
             PageLoadEvent::Started => {
                 println!("{} started loading", payload.url());
@@ -25,7 +39,7 @@ pub fn run() {
                 println!("{} finished loading", payload.url());
             }
         })
-        .invoke_handler(tauri::generate_handler![get_target_address, close_app])
+        .invoke_handler(tauri::generate_handler![get_target_address, close_app, call_socks5_proxy])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
