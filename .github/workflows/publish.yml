@@ -42,15 +42,20 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
 
-      - name: build socks5 proxy sidecar
+      - name: build socks5 sidecar (unix)
+        if: runner.os != 'Windows'
         env:
           TARGET: ${{ matrix.target }}
         run: |
-          if [ "${{ runner.os }}" = "Windows" ]; then
-            pwsh ./scripts/build-proxy.ps1
-          else
-            ./scripts/build-proxy.sh
-          fi
+          ./scripts/build-proxy.sh
+
+      - name: build socks5 sidecar (windows)
+        if: runner.os == 'Windows'
+        env:
+          TARGET: ${{ matrix.target }}
+        run: |
+          pwsh ./scripts/build-proxy.ps1
+
 
       - uses: tauri-apps/tauri-action@v0
         env:
