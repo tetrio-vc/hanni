@@ -1,6 +1,6 @@
 mod config;
 
-use tauri::{AppHandle, webview::PageLoadEvent};
+use tauri::{webview::PageLoadEvent, AppHandle, Manager};
 
 #[tauri::command]
 fn get_target_address() -> String {
@@ -14,7 +14,20 @@ fn close_app(app: AppHandle) {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
+    let mut builder = tauri::Builder::default();
+
+    #[cfg(desktop)]
+    {
+        // this plugin needs to be loaded first
+        builder = builder.plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+            let _ = app
+                .get_webview_window("main")
+                .expect("no main window")
+                .set_focus();
+        }));
+    }
+
+    builder = builder
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_log::Builder::new().build())
@@ -27,7 +40,9 @@ pub fn run() {
                 println!("{} finished loading", payload.url());
             }
         })
-        .invoke_handler(tauri::generate_handler![get_target_address, close_app])
+        .invoke_handler(tauri::generate_handler![get_target_address, close_app]);
+
+    builder
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
