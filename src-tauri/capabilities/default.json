@@ -8,23 +8,6 @@
   "permissions": [
     "core:default",
     "opener:default",
-    {
-      "identifier": "shell:allow-spawn",
-      "allow": [
-        {
-          "args": [
-            "--listen-addr",
-            {
-              "validator": "^127\\.0\\.0\\.1:[0-9]{1,5}$"
-            },
-            "no-auth"
-          ],
-          "name": "bin/socks5-proxy",
-          "sidecar": true
-        }
-      ]
-    },
-    "shell:default",
     "log:default"
   ]
 }
